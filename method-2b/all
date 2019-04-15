@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+./fit.py 1
+./fit.py 2
+./fit.py 3
+./fit.py 4
+./fit.py 5
+./fit.py 6
+./fit.py 7
+./fit.py 8
+./fit.py 9
