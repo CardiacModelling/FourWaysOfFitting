@@ -15,7 +15,6 @@ import results
 # Filename
 base = os.path.splitext(os.path.basename(__file__))[0]
 
-
 fmat = '{:<1.3e}'
 
 rows = []
@@ -31,8 +30,12 @@ for cell in 1 + np.arange(9):
         row.append('Method ' + str(method))
 
         parameters = results.load_parameters(cell, method)
-        for p in parameters:
-            row.append(fmat.format(p))
+        if parameters is None:
+            for p in range(9):
+                row.append(' '*9)
+        else:
+            for p in parameters:
+                row.append(fmat.format(p))
         rows.append(row)
 
 # Show table

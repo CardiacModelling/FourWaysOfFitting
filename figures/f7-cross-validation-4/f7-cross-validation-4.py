@@ -103,7 +103,7 @@ for cell in cell_list:
         limits[1][1] = (-2.0, 0.6)
         limits[2][1] = (-0.75, 0.9)
         limits[3][1] = (-1.45, 0.6)
-    elif cell == 5:
+    elif cell == 5 or cell == 10:
         limits[0][1] = (-1.2, 1.2)
         limits[1][1] = (-3.8, 0.6)
         limits[2][1] = (-1.2, 1.4)
@@ -128,6 +128,8 @@ for cell in cell_list:
         limits[1][1] = (-1.1, 0.2)
         limits[2][1] = (-0.43, 0.43)
         limits[3][1] = (-0.6, 0.3)
+    else:
+        raise ValueError('Unknown cell')
 
     # Create figure
     fig = plt.figure(figsize=mm(170, 130), dpi=200)
@@ -137,7 +139,12 @@ for cell in cell_list:
         4, nw, hspace=0, wspace=0.05, subplot_spec=grid1[1:, 0:])
 
     # Load parameters
-    fits = [results.load_parameters(cell, i) for i in range(1, 5)]
+    fits = []
+    for i in range(1, 5):
+        try:
+            fits.append(results.load_parameters(cell, i))
+        except ValueError:
+            fits.append(None)
 
     # Load data
     print('Loading data files for cell ' + str(cell))
@@ -185,7 +192,8 @@ for cell in cell_list:
 
     # Rows: Method 1-4
     for i, fit in enumerate(fits):
-        ix = problem.evaluate(fit)
+        if fit is not None:
+            ix = problem.evaluate(fit)
         lo = 0
         hi = lo + limits[0][2]
         ax = fig.add_subplot(grid2[i, lo:hi])
@@ -198,7 +206,8 @@ for cell in cell_list:
         for j, lim in enumerate(limits[1:]):
             ax.axvspan(lim[0][0], lim[0][1], color=cm(j), alpha=ba1)
         ax.plot(time, i0, color=color0, label=label0)
-        ax.plot(time, ix, color=colors[i], label=labels[i])
+        if fit is not None:
+            ax.plot(time, ix, color=colors[i], label=labels[i])
         ax.legend(loc='upper left').get_frame().set_alpha(1)
 
         # Thick borders for fit 4
@@ -224,7 +233,8 @@ for cell in cell_list:
             ax.set_ylim(*lim[1])
             ax.axvspan(lim[0][0], lim[0][1], color=cm(j), alpha=ba2)
             ax.plot(time, i0, color=color0, label=label0)
-            ax.plot(time, ix, color=colors[i], label=labels[i])
+            if fit is not None:
+                ax.plot(time, ix, color=colors[i], label=labels[i])
 
             # Thick borders for fit 4
             if i == 3:
@@ -235,7 +245,6 @@ for cell in cell_list:
             # X-axis label
             if i == 3 and j == 1:
                 ax.set_xlabel('Time (ms)')
-
 
     # Restore shared limits
     limits = org_limits

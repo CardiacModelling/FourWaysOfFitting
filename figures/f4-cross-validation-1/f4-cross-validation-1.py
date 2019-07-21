@@ -125,19 +125,32 @@ for cell in cell_list:
 
     if variant:
         todo = [
-            (cell, 1),
-            (cell, 1, False, True),
+            {
+                'cell': cell,
+                'method': 1,
+                'method_1b': False,
+            },
+            {
+                'cell': cell,
+                'method': 1,
+                'method_1b': True,
+            },
         ]
     else:
         todo = [
-            (cell, 1),
-            (cell, 2),
-            (cell, 3),
-            (cell, 4),
+            {'cell': cell, 'method': 1},
+            {'cell': cell, 'method': 2},
+            {'cell': cell, 'method': 3},
+            {'cell': cell, 'method': 4},
         ]
 
     for j, args in enumerate(todo):
-        p = results.load_parameters(*args)
+        try:
+            p = results.load_parameters(**args)
+        except ValueError as e:
+            print('Skipping option: ' + str(args))
+            print('  ' + str(e))
+            continue
 
         mai = sumstat.model_steady_state_activation(vai, p)
         mri = sumstat.model_steady_state_inactivation(vri, p)

@@ -103,7 +103,7 @@ for cell in cell_list:
         limits[1][1] = (-0.2, 0.85)
         limits[2][1] = (-0.8, 2.8)
         limits[3][1] = (-2.0, 1.1)
-    elif cell == 5:
+    elif cell == 5 or cell == 10:
         limits[0][1] = (-3.6, 0.5)
         limits[1][1] = (-0.1, 1.8)
         limits[2][1] = (-1.4, 6.5)
@@ -128,6 +128,8 @@ for cell in cell_list:
         limits[1][1] = (-0.1, 0.6)
         limits[2][1] = (-0.4, 1.9)
         limits[3][1] = (-1.3, 0.9)
+    else:
+        raise ValueError('Unknown cell: ' + str(cell))
 
     # Create figure
     fig = plt.figure(figsize=mm(170, 130), dpi=200)
@@ -136,11 +138,15 @@ for cell in cell_list:
     grid2 = SubGridSpec(4, 4, subplot_spec=grid1[1:, 0:], hspace=0, wspace=0.20)
 
     # Load parameters
-    fit1 = results.load_parameters(cell, 1)
-    fit2 = results.load_parameters(cell, 2)
-    fit3 = results.load_parameters(cell, 3)
-    fit4 = results.load_parameters(cell, 4)
+    fits = [None]*4
+    for j in range(4):
+        try:
+            fits[j] = results.load_parameters(cell, 1 + j)
+        except ValueError:
+            print('Skipping method ' + str(1 + j))
+            pass
 
+    # Create columns
     for i in range(4):
         protocol = 2 + i
         row = i // 2
@@ -163,10 +169,11 @@ for cell in cell_list:
 
         # Run simulations
         d = [log.clone(), log.clone(), log.clone(), log.clone()]
-        d[0]['current'] = problem.evaluate(fit1)
-        d[1]['current'] = problem.evaluate(fit2)
-        d[2]['current'] = problem.evaluate(fit3)
-        d[3]['current'] = problem.evaluate(fit4)
+        for j, fit in enumerate(fits):
+            if fit is not None:
+                d[j]['current'] = problem.evaluate(fit)
+            else:
+                print('No current for method ' + str(1 + j))
 
         # Limits
         xlo, xhi = limits[i][0]
@@ -194,12 +201,15 @@ for cell in cell_list:
             ax.yaxis.set_tick_params(labelsize=8)
             if i == 0:
                 ax.set_ylabel('I (nA)', fontsize=9)
-            plots.current(
-                ax, cell, protocol, lw=1.5, technicolor=True, log=log,
-                alpha=0.5, label=label0)
-            plots.current(
-                ax, cell, protocol, lw=1, technicolor=False, log=d[j],
-                alpha=0.5, label=labels[j])
+            if fits[j] is not None:
+                plots.current(
+                    ax, cell, protocol, lw=1.5, technicolor=True, log=log,
+                    alpha=0.5, label=label0)
+                plots.current(
+                    ax, cell, protocol, lw=1, technicolor=False, log=d[j],
+                    alpha=0.5, label=labels[j])
+            else:
+                print('Not plotting method ' + str(i + 1))
 
             # Thick borders for fit 3
             if j == 2:

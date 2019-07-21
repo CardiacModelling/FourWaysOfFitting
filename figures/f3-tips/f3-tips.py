@@ -62,35 +62,34 @@ fig.text(0.003, 0.52, 'C', letter_font)
 #
 
 font = {'size': 9}
-xpad1 = 3
-xpad2 = 3
+xpad = 3
 ypad = -10
 
 ax0 = fig.add_subplot(grid_prior1[0, 0])
 plots.prior12(ax0, False)
-ax0.set_xlabel('p1 (p5)', fontdict=font, labelpad=xpad1)
-ax0.set_ylabel('p2 (p6)', fontdict=font, labelpad=ypad)
+ax0.set_xlabel('p1 & p5', fontdict=font, labelpad=xpad)
+ax0.set_ylabel('p2 & p6', fontdict=font, labelpad=ypad)
 ax0.set_xticks([0, 500, 1000])
 ax0.set_yticks([0, 0.4])
 
 ax1 = fig.add_subplot(grid_prior1[0, 1])
 plots.prior34(ax1, False)
-ax1.set_xlabel('p3 (p7)', fontdict=font, labelpad=xpad1)
-ax1.set_ylabel('p4 (p8)', fontdict=font, labelpad=ypad)
+ax1.set_xlabel('p3 & p7', fontdict=font, labelpad=xpad)
+ax1.set_ylabel('p4 & p8', fontdict=font, labelpad=ypad)
 ax1.set_xticks([0, 500, 1000])
 ax1.set_yticks([0, 0.4])
 
 ax2 = fig.add_subplot(grid_prior2[0, 0])
 plots.prior12(ax2, True)
-ax2.set_xlabel('p1 (p5)', fontdict=font, labelpad=xpad2)
-ax2.set_ylabel('p2 (p6)', fontdict=font, labelpad=ypad)
+ax2.set_xlabel('p1 & p5 (log)', fontdict=font, labelpad=xpad)
+ax2.set_ylabel('p2 & p6', fontdict=font, labelpad=ypad)
 ax2.set_xticks([1e-7, 1e-2, 1e3])
 ax2.set_yticks([0, 0.4])
 
 ax3 = fig.add_subplot(grid_prior2[0, 1])
 plots.prior34(ax3, True)
-ax3.set_xlabel('p3 (p7)', fontdict=font, labelpad=xpad2)
-ax3.set_ylabel('p4 (p8)', fontdict=font, labelpad=ypad)
+ax3.set_xlabel('p3 & p7 (log)', fontdict=font, labelpad=xpad)
+ax3.set_ylabel('p4 & p8', fontdict=font, labelpad=ypad)
 ax3.set_xticks([1e-7, 1e-2, 1e3])
 ax3.set_yticks([0, 0.4])
 
@@ -153,7 +152,7 @@ for i, tol in enumerate(tolerances):
     ax.ticklabel_format(axis='x', style='sci', scilimits=(0, 0))
     ax.ticklabel_format(axis='y', useOffset=False)
     if i == 0:
-        ax.set_ylabel('$R_{M4}$')
+        ax.set_ylabel('$E_{M4}$')
     ax.yaxis.set_tick_params(direction='in')
 
     ax.plot(p1s, fs, lw=1, label='tol=' + str(tol))
@@ -162,6 +161,7 @@ for i, tol in enumerate(tolerances):
 
     #if debug:
     #    break
+
 
 #
 #

@@ -38,6 +38,7 @@ def mm(*size):
 
 # Create figure
 fig = plt.figure(figsize=mm(170, 38), dpi=200)
+fig.subplots_adjust(0.05, 0.18, 0.99, 0.96)
 grid = GridSpec(1, 4, wspace=0.35)
 
 marker = '??s^+*'
@@ -96,7 +97,6 @@ ax3.legend(loc='upper right')
 
 
 # Finalise
-fig.subplots_adjust(0.05, 0.17, 0.99, 0.96)
 plt.savefig(base + '.png')
 plt.savefig(base + '.pdf')
 

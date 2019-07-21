@@ -40,17 +40,23 @@ def mm(*size):
 
 # Create figure
 fig = plt.figure(figsize=mm(82, 35), dpi=200)
-fig.subplots_adjust(0.1, 0.18, 0.985, 0.99)
+fig.subplots_adjust(0.12, 0.21, 0.985, 0.98)
 
 ax = fig.add_subplot(1, 1, 1)
 
-ax.set_ylabel(r'RMSE withint 1% of best')
+ax.set_ylabel(r'Results within 1% of best (%)    ')
 
-colors = [
+colors1 = [
     'tab:blue',
     'tab:orange',
     'tab:green',
     'tab:red',
+]
+colors2 = [
+    'tab:blue',
+    '#ffbe86',
+    'tab:green',#'#95cf95',
+    'tab:red',#'#ea9293',
 ]
 
 xticks = []
@@ -59,20 +65,27 @@ for method in [2, 3, 4]:
     imethod = method - 1
 
     # Count number of scores that were the same
-    ns = []
-    ms = []
+    eclose = []
+    pclose = []
     for cell in 1 + np.arange(9):
 
         # Get scores
-        fs = results.load_errors(cell, method)
+        rs, ps, es, ts, ns = results.load(cell, method)
+        if len(rs) == 0:
+            eclose.append(0)
+            pclose.append(0)
+            continue
 
-        # Cut-off at 1% deviation
-        c = 1e-2
+        # Count how many scores were within 1% of best
+        i = es / es[0] - 1 < 0.01
+        es = es[i]
+        ps = ps[i]
+        eclose.append(100 * len(es) / len(rs))
 
-        # Count how many scores were the same
-        n = np.sum(fs / fs[0] - 1 < 1e-2)
-        ns.append(n)
-        ms.append(len(fs))
+        # Count how many results were also close in parameter space
+        ds = np.max(ps / ps[0] - 1, axis=1)
+        ds = ds[ds < 0.01]
+        pclose.append(100 * len(ds) / len(rs))
 
     # Y-position for bar charts
     d = 1 / 11
@@ -82,22 +95,30 @@ for method in [2, 3, 4]:
         'align': 'center',
         'edgecolor': 'k',
         'width': d,
-        'color': colors[imethod],
-        'alpha': 0.15,
     }
-    ax.bar(x, ms, **kargs)
-    kargs['alpha'] = 1
-    ax.bar(x, ns, **kargs)
+
+    #kargs['alpha'] = 0.5
+    kargs['color'] = colors1[imethod],
+    ax.bar(x, eclose, **kargs)
+
+    #kargs['alpha'] = 1
+    kargs['color'] = colors2[imethod],
+    ax.bar(x, pclose, **kargs)
+
+    print(eclose)
 
     xticks.extend(x)
     xtickl.extend([str(1 + i) for i in range(9)])
 
+ax.set_ylim(0, 102)
+
 ax.set_xticks(xticks)
 ax.set_xticklabels(xtickl)
 
-ax.text(2, -11, 'Method 2', horizontalalignment='center')
-ax.text(3, -11, 'Method 3', horizontalalignment='center')
-ax.text(4, -11, 'Method 4', horizontalalignment='center')
+ypos = -25
+ax.text(2, ypos, 'Method 2', horizontalalignment='center')
+ax.text(3, ypos, 'Method 3', horizontalalignment='center')
+ax.text(4, ypos, 'Method 4', horizontalalignment='center')
 
 # Store
 name = base

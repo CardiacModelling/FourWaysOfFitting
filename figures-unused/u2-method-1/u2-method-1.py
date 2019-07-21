@@ -33,7 +33,7 @@ if len(args) != 1:
 if args[0] == 'all':
     cell_list = range(1, 10)
 else:
-    cell = int(args[0])
+    cell_list = [int(args[0])]
 
 # Set font
 font = {'family': 'arial', 'size': 10}

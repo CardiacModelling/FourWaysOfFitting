@@ -104,8 +104,10 @@ for cell in cell_list:
     ax3.plot(tr[0], tr[1], marker0, **args)
 
     for j in range(4):
-        p = results.load_parameters(cell, j + 1)
-        print(p)
+        try:
+            p = results.load_parameters(cell, j + 1)
+        except ValueError:
+            continue
 
         ta, tr, ai, ri, iv = sumstat.simulate_all_summary_statistics(cell, p)
         args = {
