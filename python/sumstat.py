@@ -5,8 +5,6 @@
 from __future__ import division, print_function
 import myokit
 import numpy as np
-import os
-import pints
 
 # Import local modules
 import data
@@ -152,30 +150,30 @@ def split_points(protocol, variant=False):
     """
     # Points to split signal at
     splits = {
-        1 : [
+        1: [
             # Numbers 2, 3, and 4 are a bit off for some reason
             0, 51770, 103519, 155269, 207019, 258770, 310520,
         ],
-        2 : [
+        2: [
             0, 51770, 103519, 155269, 207019, 258770, 310520,
         ],
-        3 : [
+        3: [
             0, 82280, 164609, 246889, 329169, 411449, 493729, 576010,
         ],
-        4 : [
+        4: [
             0, 28657, 57363, 86019, 114674, 143331, 171987, 200642, 229299,
             257955, 286611, 315267, 343922, 372578, 401235, 429891, 458546,
         ],
-        5 : [
+        5: [
             0, 102974, 205897, 308822, 411746, 514670, 617593, 720518, 823442,
             926366,
         ],
     }
     splits_variants = {
-        1 : [
+        1: [
             615, 36343, 72071, 107799, 143527, 179255, 214983, 250711, 286439
         ],
-        2 : [
+        2: [
             615, 36343, 72071, 107799, 143527, 179255, 214983, 250711, 286439
         ],
     }
@@ -202,9 +200,9 @@ def split_points_nocap(protocol, variant=False):
         5: np.arange(10) * 103224,
     }
     splits_variants = {
-        1 : [
+        1: [
         ],
-        2 : [
+        2: [
         ],
     }
 
@@ -232,7 +230,7 @@ def fit_conductance_to_iv_curve(cell, parameters):
     protocol = data.load_myokit_protocol(5)
 
     # Load model
-    model = data.load_model()
+    model = data.load_myokit_model()
 
     # Set reversal potential
     model.get('nernst.EK').set_rhs(
@@ -257,8 +255,8 @@ def fit_conductance_to_iv_curve(cell, parameters):
     dt = 0.1
     d = simulation.run(
         protocol.characteristic_time(),
-        log_interval = dt,
-        log = ['engine.time', 'ikr.IKr'],
+        log_interval=dt,
+        log=['engine.time', 'ikr.IKr'],
         ).npview()
 
     # Capacitance filter
@@ -274,6 +272,7 @@ def fit_conductance_to_iv_curve(cell, parameters):
 
     # Calculate best scaling
     from scipy.optimize import fmin
+
     def f(g):
         return np.sum((iv1 - iv2 * g[0])**2)
 
@@ -321,6 +320,7 @@ def time_constant_of_activation_pr1(cell, pr1_log=None):
 
     # Fit time constant with single exponential
     from scipy.optimize import curve_fit
+
     def f(t, a, b, c):
         return a + b * np.exp(-t / c)
 
@@ -381,6 +381,7 @@ def time_constant_of_activation_pr2(cell, pr2_log=None):
 
     # Fit time constant with single exponential
     from scipy.optimize import curve_fit
+
     def f(t, a, b, c):
         return a + b * np.exp(-t / c)
 
@@ -474,7 +475,8 @@ def time_constants_pr5(cell, pr5_log=None):
         a1, b1, c1 = c[peak], -c[peak], guess
         if peak < 3:
             # Very fast: Only happens for simulations
-            if debug: print('Too fast!')
+            if debug:
+                print('Too fast!')
             peak = 3
             a1, b1, c1 = -3, 3, 0.1
         try:
@@ -612,7 +614,6 @@ def steady_state_activation_pr3(cell, pr3_log=None):
     """
     # Load data, or use cached
     pr3_log = data.load(cell, 3, pr3_log)
-    time = pr3_log['time']
     current = pr3_log['current']
 
     steps = pr3_steps
@@ -634,6 +635,7 @@ def steady_state_activation_pr3(cell, pr3_log=None):
 
     return voltages, cpeaks
 
+
 def steady_state_inactivation_and_iv_curve_pr5(
         cell, pr5_log=None, include_minus_90=False, estimate_erev=False):
     """
@@ -653,7 +655,6 @@ def steady_state_inactivation_and_iv_curve_pr5(
     """
     # Load data, or use cached
     pr5_log = data.load(cell, 5, pr5_log)
-    time = pr5_log['time']
     current = pr5_log['current']
 
     steps = pr5_steps
@@ -769,7 +770,7 @@ def steady_state_inactivation(cell, pr5_log=None):
     Makes a hardcoded data selection!
     """
     v, t = steady_state_inactivation_pr5(cell, pr5_log=pr5_log)
-    return v,t
+    return v, t
 
 
 def iv_curve(cell, pr5_log=None):
@@ -850,8 +851,8 @@ def model_steady_state_inactivation(voltages, parameters, shift=0, skew=1):
     To mess around, you can voltage-shift the curve, or skew it.
     """
     p5, p6, p7, p8 = parameters[4:8]
-    k3 = p5 * np.exp(p6 * voltages)
-    k4 = p7 * np.exp(-p8 * voltages)
+    # k3 = p5 * np.exp(p6 * voltages)
+    # k4 = p7 * np.exp(-p8 * voltages)
 
     sr = -(p6 + p8) / skew
     hr = np.log(p7 / p5) / (p6 + p8) + shift
@@ -1006,7 +1007,7 @@ def simulate_pr2345(cell, parameters):
     assert(len(parameters) == 9)
 
     # Load model
-    model = data.load_model()
+    model = data.load_myokit_model()
     model.get('membrane.V').set_label('membrane_potential')
     model.get('nernst.EK').set_rhs(
         cells.reversal_potential(cells.temperature(cell)))
@@ -1057,6 +1058,7 @@ def simulate_pr2345(cell, parameters):
         logs.append(e)
 
     return logs
+
 
 def simulate_all_summary_statistics(cell, parameters):
     """

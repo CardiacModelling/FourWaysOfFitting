@@ -52,7 +52,7 @@ for cell in cell_list:
 
     # Use method 1b instead of method 1
     if variant:
-        ps[0] = results.load_parameters(cell, 1, variant=True)
+        ps[0] = results.load_parameters(cell, 1, method_1b=True)
 
     for icrit in crit_list:
         print('Validating on criterium ' + str(icrit))

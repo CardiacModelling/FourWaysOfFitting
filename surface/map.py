@@ -15,7 +15,7 @@ import boundaries
 import cells
 import errors
 import results
-import transformation
+import transformations
 
 
 #
@@ -50,17 +50,15 @@ print('Running with ' + str(nc) + ' worker processes')
 
 
 #
-# Define boundaries and parameter transformation
+# Define parameter transformation
 #
-trans = transformation.Transformation()
-boundaries = boundaries.Boundaries(cells.lower_conductance(cell), trans)
+trans = transformations.ATransformation()
 
 
 #
 # Get best parameters
 #
-#pf5 = results.load_parameters(cell, 5)
-pfm = results.load_parameters(cell, method)
+pfm = results.load_parameters(cell, method, trans.code())
 
 # CHOOSE: EXPLORE OWN BEST OR AP BEST?
 popt = pfm

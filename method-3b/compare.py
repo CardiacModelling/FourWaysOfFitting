@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Compare method 3b results (single run) with method 3 (50 runs)
+# Compare method 3b results (single run) with method 3 (several runs)
 #
 from __future__ import division, print_function
 import os
@@ -15,15 +15,23 @@ import results
 
 fmat = '{:<1.10f}'
 
-print('Cell  Method 3      Method 3b')
+method = 3
+
+rows = []
+rows.append([
+    'Cell', 'Method ' + str(method) + '    ', 'Method ' + str(method) + 'b'])
+
 for i in range(9):
     cell = i + 1
 
-    # Get method 3 best result
-    e3 = results.load_errors(cell, 3)[0]
+    e = results.load_errors(cell, method)
+    b = results.load_errors(cell, method, start_from_m1=True)
 
-    # Get method 3b best result
-    with open('cell-' + str(cell) + '-fit-3b-errors.txt', 'r') as f:
-        e3b = float(f.readlines()[0])
+    e = 'N/A         ' if len(e) == 0 else fmat.format(e[0])
+    b = 'N/A         ' if len(b) == 0 else fmat.format(b[0])
 
-    print(str(cell) + '     ' + fmat.format(e3) + '  ' + fmat.format(e3b))
+    rows.append([str(cell) + '   ', e, b])
+
+for row in rows:
+    print('  '.join(row))
+

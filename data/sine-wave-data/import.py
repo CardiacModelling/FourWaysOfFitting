@@ -12,7 +12,7 @@ import sys
 import numpy as np
 import scipy
 import scipy.io
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import myokit
 import myokit.formats.axon
 
@@ -88,17 +88,17 @@ d.save_csv(filename)
 if show_debug:
     # Show data with capacitance artefacts
     print('Plotting data with artefacts')
-    pl.figure()
-    pl.subplot(2,1,1)
-    pl.plot(time, vm, color='darkgreen', label='V (exp)')
-    pl.xlabel('Time (ms)')
-    pl.ylabel('V (mV)')
-    pl.legend()
-    pl.subplot(2,1,2)
-    pl.plot(time, current, color='darkblue', label='I (exp)')
-    pl.xlabel('Time (ms)')
-    pl.ylabel('Current (nA)')
-    pl.legend()
+    plt.figure()
+    plt.subplot(2,1,1)
+    plt.plot(time, vm, color='darkgreen', label='V (exp)')
+    plt.xlabel('Time (ms)')
+    plt.ylabel('V (mV)')
+    plt.legend()
+    plt.subplot(2,1,2)
+    plt.plot(time, current, color='darkblue', label='I (exp)')
+    plt.xlabel('Time (ms)')
+    plt.ylabel('Current (nA)')
+    plt.legend()
 
     # Remove capacitance artefacts
     print('Flattening capacitance for plotting only')
@@ -121,7 +121,7 @@ if show_debug:
         current[i1:i2] = np.mean(current[i1-(i2-i1): i1])
 
     # Show data without capacitance artefacts
-    pl.subplot(2,1,2)
-    pl.plot(time, current, color='tab:orange', label='I (exp, cap flattened)')
-    pl.legend()
-    pl.show()
+    plt.subplot(2,1,2)
+    plt.plot(time, current, color='tab:orange', label='I (exp, cap flattened)')
+    plt.legend()
+    plt.show()

@@ -6,7 +6,6 @@ from __future__ import division, print_function
 import myokit
 import myokit.lib.hh
 import numpy as np
-import os
 import pints
 
 # Load project modules
@@ -14,6 +13,7 @@ import cells
 import data
 import model
 import sumstat
+import transformations
 
 
 class E1(pints.ErrorMeasure):
@@ -38,6 +38,8 @@ class E1(pints.ErrorMeasure):
         self.cell = cell
 
         # Store transformation object
+        if transformation is None:
+            transformation = transformations.NullTransformation()
         self.transformation = transformation
 
         # Calculate experimental summary statistics
@@ -75,8 +77,7 @@ class E1(pints.ErrorMeasure):
     def __call__(self, parameters):
 
         # Transform parameters back to model space
-        if self.transformation is not None:
-            parameters = self.transformation.detransform(parameters)
+        parameters = self.transformation.detransform(parameters)
 
         # Add fixed conductance
         if self._fixg:
@@ -116,6 +117,8 @@ class E2(pints.ErrorMeasure):
         self.cell = cell
 
         # Store transformation object
+        if transformation is None:
+            transformation = transformations.NullTransformation()
         self.transformation = transformation
 
         # Calculate experimental summary statistics
@@ -143,7 +146,7 @@ class E2(pints.ErrorMeasure):
         assert(self.ziv > 0)
 
         # Load Myokit model
-        model = data.load_model()
+        model = data.load_myokit_model()
         model.get('membrane.V').set_label('membrane_potential')
         model.get('nernst.EK').set_rhs(
             cells.reversal_potential(cells.temperature(cell)))
@@ -189,8 +192,7 @@ class E2(pints.ErrorMeasure):
     def simulate(self, parameters):
 
         # Transform parameters back to model space
-        if self.transformation is not None:
-            parameters = self.transformation.detransform(parameters)
+        parameters = self.transformation.detransform(parameters)
 
         # Run all simulations
         logs = [0] * 4
@@ -228,7 +230,7 @@ class E2(pints.ErrorMeasure):
         except Exception:
             import traceback
             e = traceback.format_exc()
-            if not 'Optimal parameters not found' in e:
+            if 'Optimal parameters not found' not in e:
                 print(e)
             return None
 
@@ -261,11 +263,19 @@ class WholeTraceError(pints.ErrorMeasure):
         The protocols (1-7) to define the error on.
     ``transformation``
         An optional transformation.
+    ``cap_filter``
+        Enable capacitance filtering (default: True)
 
     """
-    def __init__(self, cell, protocols, transformation=None):
+    def __init__(self, cell, protocols, transformation=None, cap_filter=True):
 
-        self.transformation = transformation
+        # Store transformation object
+        if transformation is None:
+            transformation = transformations.NullTransformation()
+        self._transformation = transformation
+
+        # Store problems
+        self._problems = []
 
         # Set individual errors and weights
         weights = []
@@ -288,12 +298,13 @@ class WholeTraceError(pints.ErrorMeasure):
             )
 
             # Load data, create single output problem
-            log = data.load(cell, protocol)
+            log = data.load(cell, protocol, cap_filter=cap_filter)
             time = log.time()
             current = log['current']
 
             # Create single output problem
             problem = pints.SingleOutputProblem(m, time, current)
+            self._problems.append(problem)
 
             # Define error function
             errors.append(pints.RootMeanSquaredError(problem))
@@ -302,18 +313,21 @@ class WholeTraceError(pints.ErrorMeasure):
             weights.append(1 / (np.max(current) - np.min(current)))
 
         # Create weighted sum of errors
-        self.f = pints.SumOfErrors(errors, weights)
+        self._f = pints.SumOfErrors(errors, weights)
 
     def n_parameters(self):
         return 9
 
+    def problems(self):
+        """ Return the problems, e.g. for synthetic data generation. """
+        return self._problems
+
     def __call__(self, parameters):
 
         # Transform parameters back to model space
-        if self.transformation is not None:
-            parameters = self.transformation.detransform(parameters)
+        parameters = self._transformation.detransform(parameters)
 
-        return self.f(parameters)
+        return self._f(parameters)
 
 
 class E3(WholeTraceError):
@@ -326,10 +340,13 @@ class E3(WholeTraceError):
         The cell index (1-9) to define the error on.
     ``transformation``
         An optional transformation.
+    ``cap_filter``
+        Enable capacitance filtering (default: True)
 
     """
-    def __init__(self, cell, transformation=None):
-        super(E3, self).__init__(cell, [2, 3, 4, 5], transformation)
+    def __init__(self, cell, transformation=None, cap_filter=True):
+        super(E3, self).__init__(
+            cell, [2, 3, 4, 5], transformation, cap_filter)
 
 
 class E4(WholeTraceError):
@@ -342,10 +359,12 @@ class E4(WholeTraceError):
         The cell index (1-9) to define the error on.
     ``transformation``
         An optional transformation.
+    ``cap_filter``
+        Enable capacitance filtering (default: True)
 
     """
-    def __init__(self, cell, transformation=None):
-        super(E4, self).__init__(cell, [7], transformation)
+    def __init__(self, cell, transformation=None, cap_filter=True):
+        super(E4, self).__init__(cell, [7], transformation, cap_filter)
 
 
 class EAP(WholeTraceError):
@@ -358,8 +377,9 @@ class EAP(WholeTraceError):
         The cell index (1-9) to define the error on.
     ``transformation``
         An optional transformation.
+    ``cap_filter``
+        Enable capacitance filtering (default: True)
 
     """
-    def __init__(self, cell, transformation=None):
-        super(EAP, self).__init__(cell, [6], transformation)
-
+    def __init__(self, cell, transformation=None, cap_filter=True):
+        super(EAP, self).__init__(cell, [6], transformation, cap_filter)

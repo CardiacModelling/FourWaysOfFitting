@@ -6,10 +6,9 @@
 from __future__ import division, print_function
 import myokit
 import myokit.lib.hh
-import numpy as np
 import pints
 
-from data import model_path
+import data
 
 
 class Model(pints.ForwardModel):
@@ -45,11 +44,11 @@ class Model(pints.ForwardModel):
     ]
 
     def __init__(
-        self, protocol, reversal_potential, sine_wave=False,
-        start_steady=False, analytical=False):
+            self, protocol, reversal_potential, sine_wave=False,
+            start_steady=False, analytical=False):
 
         # Load model
-        model = myokit.load_model(model_path('beattie-2017-ikr-hh.mmt'))
+        model = data.load_myokit_model()
 
         # Start at steady-state for -80mV
         if start_steady:
@@ -62,7 +61,6 @@ class Model(pints.ForwardModel):
             model.get('ikr.rec').set_state_value(ri)
 
         # Set reversal potential
-        assert reversal_potential < 0 #TODO: Remove this
         model.get('nernst.EK').set_rhs(reversal_potential)
 
         # Add sine-wave equation to model
@@ -134,7 +132,6 @@ class Model(pints.ForwardModel):
                 d = self.simulation.run(
                     times[-1] + 0.5 * times[1],
                     log_times=times,
-                    #log=['ikr.IKr', 'membrane.V'],
                     log=['ikr.IKr', 'membrane.V'],
                     progress=self._timeout,
                     ).npview()
@@ -144,8 +141,7 @@ class Model(pints.ForwardModel):
             return times * float('inf')
 
         # Store membrane potential for debugging
-        #self.simulated_v = d['membrane.V']
+        self.simulated_v = d['membrane.V']
 
         # Return
         return d['ikr.IKr']
-

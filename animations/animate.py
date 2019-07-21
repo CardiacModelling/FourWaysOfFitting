@@ -14,7 +14,7 @@ from matplotlib.gridspec import GridSpec
 from matplotlib.animation import FuncAnimation
 
 # Load project modules
-sys.path.append(os.path.abspath(os.path.join('..', '..', 'python')))
+sys.path.append(os.path.abspath(os.path.join('..', 'python')))
 import plots
 import sumstat
 

@@ -5,17 +5,12 @@
 from __future__ import division, print_function
 import myokit
 import numpy as np
-import os
-import pints
 import matplotlib.pyplot as plt
 import matplotlib.gridspec
-from mpl_toolkits.mplot3d import axes3d
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
-
 
 # Import local modules
 import data
-import cells
 import results
 import sumstat
 
@@ -23,8 +18,8 @@ import sumstat
 # Colour map for traditional protocol plots
 colormap = 'jet'
 cmap_fix = 1
-#colormap = 'nipy_spectral'
-#cmap_fix = 1.1
+# colormap = 'nipy_spectral'
+# cmap_fix = 1.1
 
 # Colours and markers for summary_statistics
 marker_act = 'g^'
@@ -42,11 +37,9 @@ def fold(protocol, time, voltage, currents, labels=None, markers=None):
 
     # Define zoom points
     zoom = {
-        #'pr1-activation-kinetics-1' : (),
-        #'pr2-activation-kinetics-2' : (),
-        3 : ((500, 6500), (-0.1, 1.75)),
-        4 : ((1180, 1500), (-3.2, 6.5)),
-        5 : ((2300, 8000), (-4, 2)),
+        3: ((500, 6500), (-0.1, 1.75)),
+        4: ((1180, 1500), (-3.2, 6.5)),
+        5: ((2300, 8000), (-4, 2)),
     }
 
     # Create colormap
@@ -214,7 +207,7 @@ def _phase_model():
     cell 9.
     """
     # Load model, set Kylie's sine wave parameters for Cell 5
-    m = data.load_model()
+    m = data.load_myokit_model()
     for i, p in enumerate(results.load_kylie_parameters(5)):
         m.get('ikr.p' + str(1 + i)).set_rhs(p)
     return m
@@ -242,7 +235,7 @@ def _phase_attractor(ax, model=None, lt='-', color=None, lw=None,
         try:
             vs = list(numbers)
         except Exception:
-            vs = [-120,] + list(range(-100, 20, 10))
+            vs = [-120, ] + list(range(-100, 20, 10))
 
         for v in vs:
             if v > -40:
@@ -338,8 +331,8 @@ def phase(ax, protocol, sim=None, limits=None, alpha=None):
     ax.axhline(0, color=color, lw=lw)
     ax.axvline(0.5, color=color, lw=lw)
     ax.axhline(0.5, color=color, lw=lw)
-    #plt.axvline(1, color=color, lw=lw)
-    #plt.axhline(1, color=color, lw=lw)
+    # plt.axvline(1, color=color, lw=lw)
+    # plt.axhline(1, color=color, lw=lw)
 
     # Plot attractor
     _phase_attractor(ax, m, color='#999999', lw=0.5)
@@ -362,8 +355,8 @@ def phase(ax, protocol, sim=None, limits=None, alpha=None):
             x = act[lo:hi]
             y = rec[lo:hi]
             ax.plot(x, y, color=cmap(norm(i)), lw=1, alpha=alpha)
-            _phase_arrows(ax, x, y, color=cmap(norm(i)), p=arrow_spacing,
-                alpha=alpha)
+            _phase_arrows(
+                ax, x, y, color=cmap(norm(i)), p=arrow_spacing, alpha=alpha)
     else:
         _technicolor_dreamline(ax, act, rec, lw=1)
 
@@ -393,97 +386,110 @@ def phase3d(ax, protocol):
             y = rec[lo:hi]
             z = v[lo:hi]
             ax.plot(x, y, z, color=cmap(norm(i)))
-            #_phase_arrows(ax, x, y, color=cmap(norm(i)), p=arrow_spacing)
+            # _phase_arrows(ax, x, y, color=cmap(norm(i)), p=arrow_spacing)
     else:
         _technicolor_dreamline(ax, act, rec, v)
 
 
-def prior12(ax, log, labels=True):
+def prior12(ax, logx, logy=False, labels=True):
     """
     Draw the prior for p1 and p2.
     """
+    ga1 = 0.3
+    ga2 = 0.2
+
     lower_alpha = 1e-7              # Kylie: 1e-7
     upper_alpha = 1e3               # Kylie: 1e3
-    lower_beta  = 1e-7              # Kylie: 1e-7
-    upper_beta  = 0.4               # Kylie: 0.4
+    lower_beta = 1e-7               # Kylie: 1e-7
+    upper_beta = 0.4                # Kylie: 0.4
+
+    ax.axvline(lower_alpha, color='k', alpha=ga1)
+    ax.axvline(upper_alpha, color='k', alpha=ga1)
+    ax.axhline(lower_beta, color='k', alpha=ga1)
+    ax.axhline(upper_beta, color='k', alpha=ga1)
 
     rmin = 1.67e-5
     rmax = 1000
-    vmin = -120
+    # vmin = -120
     vmax = 58.25
 
     n = 1000
-    b = np.linspace(lower_beta, upper_beta, n)
-    if log:
+
+    if logx:
         a = np.exp(np.linspace(np.log(lower_alpha), np.log(upper_alpha), n))
-    else:
-        a = np.linspace(lower_alpha, upper_alpha, n)
-
-    ax.axvline(lower_alpha, color='k', alpha=0.25)
-    ax.axvline(upper_alpha, color='k', alpha=0.25)
-    ax.axhline(lower_beta, color='k', alpha=0.25)
-    ax.axhline(upper_beta, color='k', alpha=0.25)
-
-    if log:
         ax.set_xscale('log')
         ax.set_xlim(lower_alpha * 0.3, upper_alpha * 3)
     else:
+        a = np.linspace(lower_alpha, upper_alpha, n)
         ax.set_xlim(lower_alpha - 50, upper_alpha + 50)
-    ax.set_ylim(lower_beta - 0.02, upper_beta + 0.02)
+
+    if logy:
+        ax.set_yscale('log')
+        ax.set_ylim(lower_beta * 0.3, upper_beta * 3)
+    else:
+        ax.set_ylim(lower_beta - 0.02, upper_beta + 0.02)
+
 
     bmin = (1 / vmax) * (np.log(rmin) - np.log(a))
     bmax = (1 / vmax) * (np.log(rmax) - np.log(a))
     bmin = np.maximum(bmin, lower_beta)
     bmax = np.minimum(bmax, upper_beta)
+    bmax = np.maximum(bmax, lower_beta)
     ax.fill_between(
-        a, bmin, bmax, color='k', alpha=0.1,
-        label='Prior' if labels else None
+        a, bmin, bmax, color='k', alpha=ga2,
+        label='Bounded area' if labels else None
     )
 
     ax.plot(a, bmin, label='Lower bound' if labels else None)
     ax.plot(a, bmax, label='Upper bound' if labels else None)
 
 
-def prior34(ax, log, labels=True):
+def prior34(ax, logx, logy=False, labels=True):
     """
     Draw the prior for p3 and p4.
     """
+    ga1 = 0.3
+    ga2 = 0.2
+
     lower_alpha = 1e-7              # Kylie: 1e-7
     upper_alpha = 1e3               # Kylie: 1e3
-    lower_beta  = 1e-7              # Kylie: 1e-7
-    upper_beta  = 0.4               # Kylie: 0.4
+    lower_beta = 1e-7               # Kylie: 1e-7
+    upper_beta = 0.4                # Kylie: 0.4
+
+    ax.axvline(lower_alpha, color='k', alpha=ga1)
+    ax.axvline(upper_alpha, color='k', alpha=ga1)
+    ax.axhline(lower_beta, color='k', alpha=ga1)
+    ax.axhline(upper_beta, color='k', alpha=ga1)
 
     rmin = 1.67e-5
     rmax = 1000
     vmin = -120
-    vmax = 58.25
+    # vmax = 58.25
 
     n = 1000
-    b = np.linspace(lower_beta, upper_beta, n)
-    if log:
+
+    if logx:
         a = np.exp(np.linspace(np.log(lower_alpha), np.log(upper_alpha), n))
-    else:
-        a = np.linspace(lower_alpha, upper_alpha, n)
-
-    ax.axvline(lower_alpha, color='k', alpha=0.25)
-    ax.axvline(upper_alpha, color='k', alpha=0.25)
-    ax.axhline(lower_beta, color='k', alpha=0.25)
-    ax.axhline(upper_beta, color='k', alpha=0.25)
-
-    if log:
         ax.set_xscale('log')
         ax.set_xlim(lower_alpha * 0.3, upper_alpha * 3)
     else:
+        a = np.linspace(lower_alpha, upper_alpha, n)
         ax.set_xlim(lower_alpha - 50, upper_alpha + 50)
-    ax.set_ylim(lower_beta - 0.02, upper_beta + 0.02)
+
+    if logy:
+        ax.set_yscale('log')
+        ax.set_ylim(lower_beta * 0.3, upper_beta * 3)
+    else:
+        ax.set_ylim(lower_beta - 0.02, upper_beta + 0.02)
 
     bmin = (-1 / vmin) * (np.log(rmin) - np.log(a))
     bmax = (-1 / vmin) * (np.log(rmax) - np.log(a))
     bmin = np.maximum(bmin, lower_beta)
     bmax = np.minimum(bmax, upper_beta)
+    bmax = np.maximum(bmax, lower_beta)
     ax.fill_between(
-        a, bmin, bmax, color='k', alpha=0.1,
-        label='Prior' if labels else None
+        a, bmin, bmax, color='k', alpha=ga2,
+        label='Bounded area' if labels else None
     )
     ax.plot(a, bmin, label='Lower bound' if labels else None)
     ax.plot(a, bmax, label='Upper bound' if labels else None)

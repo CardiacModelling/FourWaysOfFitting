@@ -15,7 +15,7 @@ try:
     frame = inspect.currentframe()
     ROOT = os.path.dirname(inspect.getfile(frame))
 finally:
-    del(frame) # Must be manually deleted
+    del(frame)  # Must be manually deleted
 ROOT = os.path.join(ROOT, '..')
 
 
@@ -29,7 +29,7 @@ MODEL = os.path.join(ROOT, 'model-and-protocols')
 PROTO = os.path.join(ROOT, 'model-and-protocols')
 
 
-def load(cell, protocol, cached=None):
+def load(cell, protocol, cached=None, cap_filter=True):
     """
     Returns data for the given cell and protocol, with capacitance filtering
     applied.
@@ -42,6 +42,8 @@ def load(cell, protocol, cached=None):
         The protocol to use (integer)
     ``cached``
         Optional cached data. If given, this will be returned directly.
+    ``cap_filter``
+        Enable capacitance filtering (default: True)
 
     Returns a myokit DataLog.
     """
@@ -79,12 +81,17 @@ def load(cell, protocol, cached=None):
         log.save(data_file + '.zip')
 
     # Apply capacitance filtering
-    dt = 0.1
-    signals = [log.time(), log['current']]
     voltage = 'voltage' in log
-    if voltage:
-        signals.append(log['voltage'])
-    signals = capacitance(protocol, dt, *signals)
+    if cap_filter:
+        dt = 0.1
+        signals = [log.time(), log['current']]
+        if voltage:
+            signals.append(log['voltage'])
+        signals = capacitance(protocol, dt, *signals)
+    else:
+        signals = [log.time(), log['current']]
+        if voltage:
+            signals.append(log['voltage'])
 
     log = myokit.DataLog()
     log.set_time_key('time')
@@ -97,9 +104,52 @@ def load(cell, protocol, cached=None):
     return log
 
 
-def load_model():
+def save(cell, protocol, log):
     """
-    Loads the HH version of the Beattie model.
+    Stores synthetic data for the given cell and protocol.
+
+    Arguments:
+
+    ``cell``
+        The cell to use (integer).
+    ``protocol``
+        The protocol to use (integer)
+    ``log``
+        The log to store
+
+    """
+    # Test cell index
+    if cell < 10:
+        raise ValueError('Artificial cell index must be 10 or greater.')
+
+    # Test log
+    for key in ['time', 'current', 'voltage']:
+        if key not in log:
+            raise ValueError('Missing log entry: ' + key)
+
+    # Get path to data file
+    trad = os.path.join(DATA, 'traditional-data')
+    data_files = {
+        1: os.path.join(trad, 'pr1-activation-kinetics-1-cell-' + str(cell)),
+        2: os.path.join(trad, 'pr2-activation-kinetics-2-cell-' + str(cell)),
+        3: os.path.join(trad, 'pr3-steady-activation-cell-' + str(cell)),
+        4: os.path.join(trad, 'pr4-inactivation-cell-' + str(cell)),
+        5: os.path.join(trad, 'pr5-deactivation-cell-' + str(cell)),
+        6: os.path.join(DATA, 'validation-data', 'ap-cell-' + str(cell)),
+        7: os.path.join(DATA, 'sine-wave-data', 'cell-' + str(cell)),
+    }
+    data_file = os.path.abspath(data_files[protocol])
+
+    # Store
+    print('Storing cell ' + str(cell) + ' data for protocol ' + str(protocol)
+          + ' to ' + data_file)
+    log.save(data_file + '.zip')
+    log.save_csv(data_file + '.csv')
+
+
+def load_myokit_model():
+    """
+    Loads the HH version of the Beattie (Myokit) model.
     """
     return myokit.load_model(os.path.join(MODEL, 'beattie-2017-ikr-hh.mmt'))
 
@@ -163,7 +213,7 @@ def load_protocol_values(protocol, variant=False):
         log = load_ap_protocol().npview()
         t, v = log['time'], log['voltage']
     elif protocol == 7:
-        m = load_model()
+        m = load_myokit_model()
         m.get('membrane.V').set_rhs(
             'if(engine.time >= 3000.1 and engine.time < 6500.1,'
             + ' - 30'
@@ -232,4 +282,3 @@ def protocol_path(protocol_file):
     Returns the path to the given Myokit protocol file.
     """
     return os.path.join(PROTO, protocol_file)
-
