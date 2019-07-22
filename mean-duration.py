@@ -23,6 +23,10 @@ row_opts = [
     ['M3b', 3, 'a', 'a', True, False],
     ['M2-na', 2, 'n', 'a', False, False],
     ['M2-fa', 2, 'f', 'a', False, False],
+    ['M2-an', 2, 'a', 'n', False, False],
+    ['M2-af', 2, 'a', 'f', False, False],
+    ['M2-nn', 2, 'n', 'n', False, False],
+    ['M2-ff', 2, 'f', 'f', False, False],
     ['M3-na', 3, 'n', 'a', False, False],
     ['M3-fa', 3, 'f', 'a', False, False],
     ['M3-an', 3, 'a', 'n', False, False],
@@ -36,7 +40,7 @@ row_opts = [
     ['M4-nn', 4, 'n', 'n', False, False],
     ['M4-ff', 4, 'f', 'f', False, False],
 ]
-rules = [0, 7, 9, 15]
+rules = [0, 7, 13, 19]
 
 header = [
     'Option',

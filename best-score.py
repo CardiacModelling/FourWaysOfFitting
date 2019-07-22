@@ -18,6 +18,10 @@ row_opts = [
     ['M2b', 2, 'a', 'a', True, False],
     ['M2-na', 2, 'n', 'a', False, False],
     ['M2-fa', 2, 'f', 'a', False, False],
+    ['M2-an', 2, 'a', 'n', False, False],
+    ['M2-af', 2, 'a', 'f', False, False],
+    ['M2-nn', 2, 'n', 'n', False, False],
+    ['M2-ff', 2, 'f', 'f', False, False],
 
     ['M3', 3, 'a', 'a', False, False],
     ['M3b', 3, 'a', 'a', True, False],
@@ -42,7 +46,7 @@ row_opts = [
 
     ['AP', 5, 'a', 'a', False, False],
 ]
-rules = [0, 4, 12, 19, 22]
+rules = [0, 8, 16, 23, 26]
 
 header = ['Option'] + [str(1 + i) for i in range(10)]
 
