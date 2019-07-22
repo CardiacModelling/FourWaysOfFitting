@@ -151,8 +151,8 @@ for cell in cell_list:
     ax.set_xticks(xticks)
     ax.set_xticklabels(xtickl)
 
-    #for iopt, label in enumerate(opt_labels):
-    #    ax.text(iopt, -22, label, horizontalalignment='center')
+    for iopt, label in enumerate(opt_labels):
+        ax.text(0.85 + iopt, -22, label, horizontalalignment='center')
 
     # Store
     name = base + '-cell-' + str(cell) + '-m' + str(method)

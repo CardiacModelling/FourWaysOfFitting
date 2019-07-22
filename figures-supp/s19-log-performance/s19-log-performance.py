@@ -125,7 +125,7 @@ for cell in cell_list:
         for config in row:
             method, search, sample = config
 
-            label = 'M' + str(method) + '-' + search + sample
+            label = 'M' + str(method) + ' ' + search + ',' + sample
             color = method_colors[method - 1]
             labels.append(label)
             colors.append(color)
