@@ -40,9 +40,11 @@ row_opts = [
     ['M4-ka', 4, 'k', 'a', False, False],
     ['M4-kk', 4, 'k', 'k', False, False],
 
+    ['M4 nm', 4, 'a', 'a', False, False, True],
+
     ['AP', 5, 'a', 'a', False, False],
 ]
-rules = [0, 4, 12, 19, 22]
+rules = [0, 4, 12, 19, 23]
 
 header = ['Option'] + [str(1 + i) for i in range(10)]
 
@@ -52,11 +54,16 @@ cells = range(1, 11)
 
 rows = [header]
 for i, ropt in enumerate(row_opts):
+    if len(ropt) > 6:
+        local_optimiser = ropt[6]
+        ropt = ropt[:-1]
+    else:
+        local_optimiser=False
     name, method, search, sample, start_from_m1, method_1b = ropt
 
     row = [name]
     for cell in cells:
-        fs = results.load_errors(cell, *ropt[1:])
+        fs = results.load_errors(cell, *ropt[1:], local_optimiser=local_optimiser)
         if len(fs):
             f0 = fmat.format(fs[0])
             # Remove extra 0
