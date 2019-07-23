@@ -20,7 +20,7 @@ debug = False
 
 
 def cmd(method, search_transformation='a', sample_transformation='a',
-        start_from_m1=False, method_1b=False):
+        start_from_m1=False, method_1b=False, local_optimiser=False):
     """
     Handles command-line arguments to run a fit with one or all cells.
     """
@@ -57,11 +57,12 @@ def cmd(method, search_transformation='a', sample_transformation='a',
     # Run
     for cell in cell_list:
         fit(cell, method, search_transformation, sample_transformation,
-        start_from_m1, method_1b, repeats, cap)
+        start_from_m1, method_1b, repeats, cap, local_optimiser)
 
 
 def fit(cell, method, search_transformation='a', sample_transformation='a',
-        start_from_m1=False, method_1b=False, repeats=1, cap=None):
+        start_from_m1=False, method_1b=False, repeats=1, cap=None,
+        local_optimiser=False):
     """
     Performs a fit to data from cell ``cell``, using method ``method`` and the
     given configuration.
@@ -141,7 +142,7 @@ def fit(cell, method, search_transformation='a', sample_transformation='a',
             n = results.count(
                 cell, method,
                 search_transformation.code(), sample_transformation.code(),
-                start_from_m1, method_1b, False)
+                start_from_m1, method_1b, local_optimiser, parse=False)
             if n >= cap:
                 print()
                 print('Maximum number of runs reached: terminating.')
@@ -166,7 +167,7 @@ def fit(cell, method, search_transformation='a', sample_transformation='a',
         with results.reserve_base_name(
                 cell, method,
                 search_transformation.code(), sample_transformation.code(),
-                start_from_m1, method_1b) as base:
+                start_from_m1, method_1b, local_optimiser) as base:
             print('Storing results using base ' + base)
 
             # Choose starting point
@@ -184,11 +185,15 @@ def fit(cell, method, search_transformation='a', sample_transformation='a',
                     f0 = f(q0)              # Initial score
 
             # Create optimiser
-            opt = pints.OptimisationController(
-                f, q0, boundaries=bounds, method=pints.CMAES)
+            if local_optimiser:
+                opt = pints.OptimisationController(
+                    f, q0, method=pints.NelderMead)
+            else:
+                opt = pints.OptimisationController(
+                    f, q0, boundaries=bounds, method=pints.CMAES)
             opt.set_log_to_file(base + '.csv', True)
             opt.set_max_iterations(3 if debug else None)
-            opt.set_parallel(True)
+            opt.set_parallel(not local_optimiser)
 
             # Run optimisation
             with np.errstate(all='ignore'):             # Ignore numpy warnings

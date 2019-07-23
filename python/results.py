@@ -33,7 +33,7 @@ def natural_sort(s):
 
 def _root_name(cell, method,
                search_transformation='a', sample_transformation='a',
-               start_from_m1=False, method_1b=False):
+               start_from_m1=False, method_1b=False, local_optimiser=False):
     """
     Returns a dirname and base filename for the given info: To create a full
     filename, add a repeat number and a file extension.
@@ -74,6 +74,8 @@ def _root_name(cell, method,
         dirname += 'b'
     if search_transformation != 'a' or sample_transformation != 'a':
         dirname += '-' + search_transformation + sample_transformation
+    if local_optimiser:
+        dirname += '-local'
     dirname = os.path.join(ROOT, dirname)
 
     # Get root of file name
@@ -97,7 +99,7 @@ class reserve_base_name(object):
     """
     def __init__(self, cell, method, search_transformation='a',
                  sample_transformation='a', start_from_m1=False,
-                 method_1b=False):
+                 method_1b=False, local_optimiser=False):
 
         # Method 1 is only supported for method 1b
         if method == 1 and not method_1b:
@@ -106,7 +108,7 @@ class reserve_base_name(object):
         # Get directory and root of filename (without indice)
         dirname, root = _root_name(
             cell, method, search_transformation, sample_transformation,
-            start_from_m1, method_1b)
+            start_from_m1, method_1b, local_optimiser)
         self._dirname = dirname
         self._root = root
 
@@ -201,7 +203,8 @@ def save(base, parameters, error, time, evaluations):
 
 
 def count(cell, method, search_transformation='a', sample_transformation='a',
-          start_from_m1=False, method_1b=False, parse=True):
+          start_from_m1=False, method_1b=False, local_optimiser=False,
+          parse=True):
     """
     Counts the number of results available for the given configuration.
 
@@ -212,17 +215,17 @@ def count(cell, method, search_transformation='a', sample_transformation='a',
         # Count parsed results
         parts = load(
             cell, method, search_transformation, sample_transformation,
-            start_from_m1, method_1b)
+            start_from_m1, method_1b, local_optimiser)
         return len(parts[0])
     else:
         dirname, root = _root_name(
             cell, method, search_transformation, sample_transformation,
-            start_from_m1, method_1b)
+            start_from_m1, method_1b, local_optimiser)
         return len(list(glob.glob(os.path.join(dirname, root + '*.txt'))))
 
 
 def load(cell, method, search_transformation='a', sample_transformation='a',
-         start_from_m1=False, method_1b=False):
+         start_from_m1=False, method_1b=False, local_optimiser=False):
     """
     Returns all results for the given configuration.
 
@@ -234,7 +237,7 @@ def load(cell, method, search_transformation='a', sample_transformation='a',
     """
     dirname, root = _root_name(
         cell, method, search_transformation, sample_transformation,
-        start_from_m1, method_1b)
+        start_from_m1, method_1b, local_optimiser)
 
     # Create empty lists
     rs, ps, es, ts, ns = [], [], [], [], []
@@ -296,7 +299,8 @@ def load(cell, method, search_transformation='a', sample_transformation='a',
 
 def load_parameters(
         cell, method, search_transformation='a', sample_transformation='a',
-        start_from_m1=False, method_1b=False, repeats=False):
+        start_from_m1=False, method_1b=False, local_optimiser=False,
+        repeats=False):
     """
     Returns the parameters obtained from a fit with a given ``method`` to data
     from the specified ``cell`` with the given configuration.
@@ -306,7 +310,7 @@ def load_parameters(
     if method == 1 and not method_1b:
         path = _root_name(
             cell, method, search_transformation, sample_transformation,
-            start_from_m1, method_1b)
+            start_from_m1, method_1b, local_optimiser)
         path = os.path.join(*path) + '.txt'
         with open(path, 'r') as f:
             p = np.array([float(x) for x in f.readlines()])
@@ -315,7 +319,7 @@ def load_parameters(
 
     rs, ps, es, ts, ns = load(
         cell, method, search_transformation, sample_transformation,
-        start_from_m1, method_1b)
+        start_from_m1, method_1b, local_optimiser)
     if repeats:
         return ps
     else:
@@ -324,37 +328,37 @@ def load_parameters(
 
 def load_errors(
         cell, method, search_transformation='a', sample_transformation='a',
-        start_from_m1=False, method_1b=False):
+        start_from_m1=False, method_1b=False, local_optimiser=False):
     """
     Returns the (sorted) errors for all repeats for the given fit.
     """
     rs, ps, es, ts, ns = load(
         cell, method, search_transformation, sample_transformation,
-        start_from_m1, method_1b)
+        start_from_m1, method_1b, local_optimiser)
     return es
 
 
 def load_times(
         cell, method, search_transformation='a', sample_transformation='a',
-        start_from_m1=False, method_1b=False):
+        start_from_m1=False, method_1b=False, local_optimiser=False):
     """
     Returns the (sorted) times for all repeats for the given fit.
     """
     rs, ps, es, ts, ns = load(
         cell, method, search_transformation, sample_transformation,
-        start_from_m1, method_1b)
+        start_from_m1, method_1b, local_optimiser)
     return ts
 
 
 def load_evaluations(
         cell, method, search_transformation='a', sample_transformation='a',
-        start_from_m1=False, method_1b=False):
+        start_from_m1=False, method_1b=False, local_optimiser=False):
     """
     Returns the (sorted) evaluations for all repeats for the given fit.
     """
     rs, ps, es, ts, ns = load(
         cell, method, search_transformation, sample_transformation,
-        start_from_m1, method_1b)
+        start_from_m1, method_1b, local_optimiser)
     return ns
 
 
