@@ -45,7 +45,8 @@ rules = [0, 7, 13, 19]
 header = [
     'Option',
     'Mean',
-    'Mean * 50',
+    'Mean*50',
+    'Mean*80',
     'Min',
     '10%',
     '90%',
@@ -81,12 +82,13 @@ for i, ropt in enumerate(row_opts):
     if times:
         row.append(format_time(np.mean(times)))
         row.append(format_time(np.mean(times) * 50))
+        row.append(format_time(np.mean(times) * 80))
         row.append(format_time(np.min(times)))
         row.append(format_time(np.percentile(times, 10)))
         row.append(format_time(np.percentile(times, 90)))
         row.append(format_time(np.max(times)))
     else:
-        row.extend([''] * 6)
+        row.extend([''] * 7)
     rows.append(row)
 
 
