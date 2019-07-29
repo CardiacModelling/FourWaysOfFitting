@@ -152,7 +152,7 @@ for quad in [1, 2, 3, 4]:
     gs = -np.log(np.abs(fs))
 
     # Set manual, fixed boundaries for colormap
-    print(np.min(gs[np.isfinite(gs)]), np.max(gs[np.isfinite(gs)]))
+    #print(np.min(gs[np.isfinite(gs)]), np.max(gs[np.isfinite(gs)]))
     assert np.min(gs[np.isfinite(gs)]) > gmin
     assert np.max(gs[np.isfinite(gs)]) < gmax
 
@@ -239,11 +239,6 @@ for row, tcode in enumerate('naf'):
     ]
 
     popt = results.load_parameters(cell, method)
-    qopt = np.copy(popt)
-    qopt[0] = np.log(qopt[0])
-    qopt[2] = np.log(qopt[2])
-    qopt[4] = np.log(qopt[4])
-    qopt[6] = np.log(qopt[6])
 
     axes = [ax0, ax1, ax2, ax3]
     for quad, qdata in enumerate(quads):
@@ -259,7 +254,7 @@ for row, tcode in enumerate('naf'):
             vmax=gmax,
         )
 
-        ax.plot(qopt[i], qopt[j], 'x', color='tab:orange')
+        ax.plot(np.log(popt[2*quad]), popt[2*quad+1], 'x', color='tab:orange')
 
     # Sample and plot
     trans = transformations.create(tcode)
