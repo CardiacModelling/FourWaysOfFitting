@@ -18,17 +18,13 @@ import results
 
 
 
-full_with_conductance = True
-
-
-
 #
 # Check input arguments
 #
 base = os.path.splitext(os.path.basename(__file__))[0]
 args = sys.argv[1:]
-if len(args) != 2:
-    print('Syntax: ' + base + '.py <cell|all> <method>')
+if len(args) not in (2, 3):
+    print('Syntax: ' + base + '.py <cell|all> <method> (kinetic)')
     sys.exit(1)
 
 if args[0] == 'all':
@@ -37,7 +33,13 @@ else:
     cell_list = [int(x) for x in args[0].split(',')]
 
 method = int(args[1])
-assert(method in [3, 4])
+assert(method in [2, 3, 4])
+
+kinetic = False
+if len(args) == 3:
+    kinetic = args[2].lower() == 'kinetic'
+if kinetic:
+    print('Looking at "k-space" transformation')
 
 
 # Set font
@@ -49,7 +51,7 @@ def mm(*size):
     return tuple(x / 25.4 * 1.5 for x in size)
 
 # Options
-ftr = 'f' if full_with_conductance else 'k'
+ftr = 'k' if kinetic else 'f'
 baseline = [method, 'a', 'a']
 options = [
     [
@@ -93,8 +95,6 @@ def count(config):
 
     # Count how many results were also close in parameter space
     ds = np.max(ps / ps[0] - 1, axis=1)
-    if method == 2:
-        print(ds)
     ds = ds[ds < 0.01]
     pclose = 100 * len(ds) / len(rs)
 
@@ -156,8 +156,9 @@ for cell in cell_list:
 
     # Store
     name = base + '-cell-' + str(cell) + '-m' + str(method)
-    if not full_with_conductance:
+    if kinetic:
         name += '-kinetic'
+    print('Saving results to ' + name)
     fig.savefig(name + '.png')
     fig.savefig(name + '.pdf')
 
