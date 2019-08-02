@@ -26,14 +26,16 @@ import sumstat
 #
 base = os.path.splitext(os.path.basename(__file__))[0]
 args = sys.argv[1:]
-if len(args) != 1:
-    print('Syntax:  ' + base + '.py <cell>')
+if len(args) not in (1, 2):
+    print('Syntax:  ' + base + '.py <cell> (pdf)')
     sys.exit(1)
 
 if args[0] == 'all':
     cell_list = range(1, 10)
 else:
     cell_list = [int(args[0])]
+pdf = (len(args) > 1 and args[1] == 'pdf')
+
 
 # Set font
 font = {'family': 'arial', 'size': 10}
@@ -118,6 +120,8 @@ for cell in cell_list:
     # Finalise
     fig.subplots_adjust(0.055, 0.055, 0.985, 0.98)
     fig.savefig(base + '-cell-' + str(cell) + '.png')
+    if pdf:
+        fig.savefig(base + '-cell-' + str(cell) + '.pdf')
 
 #plt.show()
 

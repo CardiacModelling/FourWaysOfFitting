@@ -29,14 +29,15 @@ import results
 #
 base = os.path.splitext(os.path.basename(__file__))[0]
 args = sys.argv[1:]
-if len(args) != 1:
-    print('Syntax: ' + base + '.py <cell|all>')
+if len(args) not in (1, 2):
+    print('Syntax: ' + base + '.py <cell|all> (pdf)')
     sys.exit(1)
 
 if args[0] == 'all':
     cell_list = range(1, 10)
 else:
     cell_list = [int(args[0])]
+pdf = (len(args) > 1 and args[1] == 'pdf')
 
 
 # Set font
@@ -233,6 +234,8 @@ for cell in cell_list:
 
     # Finalise
     fig.savefig(base + '-cell-' + str(cell) + '.png')
+    if pdf:
+        fig.savefig(base + '-cell-' + str(cell) + '.pdf')
 
     plt.close(fig)
     del(fig, ax, grid1, grid2)
