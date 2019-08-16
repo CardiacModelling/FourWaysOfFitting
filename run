@@ -1,17 +1,9 @@
 #!/usr/bin/env bash
-cd ~/dev/FourWaysOfFitting/method-3-na/
-./fit.py 10,5 120 120
-cd ~/dev/FourWaysOfFitting/method-3-fa/
-./fit.py 10,5 120 120
-cd ~/dev/FourWaysOfFitting/method-3-an/
-./fit.py 10,5 120 120
-cd ~/dev/FourWaysOfFitting/method-3-af/
-./fit.py 10,5 120 120
-cd ~/dev/FourWaysOfFitting/method-3-nn/
-./fit.py 10,5 120 120
-cd ~/dev/FourWaysOfFitting/method-3-ff/
-./fit.py 10,5 120 120
+cd ~/dev/FourWaysOfFitting/method-4/
+./fit.py 1,2,3,4,5,6,7,8,9,10 120 120
 cd ~/dev/FourWaysOfFitting/method-3/
+./fit.py 1,2,3,4,5,6,7,8,9,10 120 120
+cd ~/dev/FourWaysOfFitting/method-2/
 ./fit.py 1,2,3,4,5,6,7,8,9,10 120 120
 cd ~/dev/FourWaysOfFitting/method-4-na/
 ./fit.py 10,5 120 120
@@ -31,8 +23,18 @@ cd ~/dev/FourWaysOfFitting/method-4-ka/
 ./fit.py 10 120 120
 cd ~/dev/FourWaysOfFitting/method-4-kk/
 ./fit.py 10 120 120
-cd ~/dev/FourWaysOfFitting/method-4/
-./fit.py 1,2,3,4,5,6,7,8,9,10 120 120
+cd ~/dev/FourWaysOfFitting/method-3-na/
+./fit.py 10,5 120 120
+cd ~/dev/FourWaysOfFitting/method-3-fa/
+./fit.py 10,5 120 120
+cd ~/dev/FourWaysOfFitting/method-3-an/
+./fit.py 10,5 120 120
+cd ~/dev/FourWaysOfFitting/method-3-af/
+./fit.py 10,5 120 120
+cd ~/dev/FourWaysOfFitting/method-3-nn/
+./fit.py 10,5 120 120
+cd ~/dev/FourWaysOfFitting/method-3-ff/
+./fit.py 10,5 120 120
 cd ~/dev/FourWaysOfFitting/method-2-na/
 ./fit.py 10,5 120 120
 cd ~/dev/FourWaysOfFitting/method-2-fa/
@@ -41,5 +43,3 @@ cd ~/dev/FourWaysOfFitting/method-2-af/
 ./fit.py 10,5 120 120
 cd ~/dev/FourWaysOfFitting/method-2-ff/
 ./fit.py 10,5 120 120
-cd ~/dev/FourWaysOfFitting/method-2/
-./fit.py 1,2,3,4,5,6,7,8,9,10 120 120
