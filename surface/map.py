@@ -21,10 +21,16 @@ import transformations
 #
 # Check input arguments
 #
+#   cell    Cell 1--10
+#   error   Method 1--4, or AP surface (5)
+#   n       Number of points in each direction
+#   quad    Quadrant to map (p1,p2), (p3,p4), ... Can be 'all'
+#   nc      Number of cores to use: Will use all if not given
+#
 base = os.path.splitext(os.path.basename(__file__))[0]
 args = sys.argv[1:]
 if len(args) not in (4, 5):
-    print('Syntax: ' + base + '.py <cell> <error> <n> <quad> <nc>')
+    print('Syntax: ' + base + '.py <cell> <error> <n> <quad> (nc)')
     sys.exit(1)
 cell = int(args[0])
 method = int(args[1])
