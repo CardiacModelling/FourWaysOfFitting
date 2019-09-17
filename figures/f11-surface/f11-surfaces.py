@@ -196,6 +196,24 @@ for row, method in enumerate(methods):
             gmax = 5
         else:
             raise NotImplementedError
+    elif cell == 10:
+        if method == 1:
+            gmin = -7
+            gmax = 1
+        elif method == 2:
+            gmin = -13.5
+            gmax = 4.5
+        elif method == 3:
+            gmin = -50
+            gmax = 50
+        elif method == 4:
+            gmin = -0.5
+            gmax = 5.5
+        elif method == 5:
+            gmin = -50
+            gmax = 50
+        else:
+            raise NotImplementedError
     else:
         raise NotImplementedError
 
