@@ -82,5 +82,6 @@ ax1.text(-0.36, 0.92, 'B', font, transform=ax1.transAxes)
 # Finalise
 fig.savefig(base + '.png')
 fig.savefig(base + '.pdf')
+fig.savefig(base + '.eps')
 
 #plt.show()

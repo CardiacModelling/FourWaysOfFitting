@@ -99,5 +99,6 @@ ax3.legend(loc='upper right')
 # Finalise
 plt.savefig(base + '.png')
 plt.savefig(base + '.pdf')
+plt.savefig(base + '.eps')
 
 #plt.show()

@@ -137,6 +137,7 @@ for i, lim in enumerate(limits):
 # Finalise
 fig.savefig(base + '.png')
 fig.savefig(base + '.pdf')
+fig.savefig(base + '.svg')
 
 #plt.show()
 

@@ -148,4 +148,5 @@ ax3.legend(loc=legend_location)
 # Store
 fig.savefig(base + '.png')
 fig.savefig(base + '.pdf')
+fig.savefig(base + '.eps')
 
