@@ -24,16 +24,18 @@ import results
 base = os.path.splitext(os.path.basename(__file__))[0]
 args = sys.argv[1:]
 if len(args) != 2:
-    print('Syntax: ' + base + '.py <cell> <all|partial>')
+    print('Syntax: ' + base + '.py <cell> <all|partial|paper>')
     sys.exit(1)
 cell = int(args[0])
 mode = args[1]
 print('Selected cell: ' + str(cell))
 print('Selected mode: ' + mode)
 
-assert mode in ('all', 'partial')
+assert mode in ('all', 'partial', 'presentation')
 if mode == 'all':
     methods = [5, 1, 2, 3, 4]
+elif mode == 'presentation':
+    methods = [2, 3, 4]
 else:
     methods = [2, 4]
 
@@ -106,6 +108,10 @@ elif mode == 'partial':
     fig = plt.figure(figsize=mm(170, 80), dpi=200)
     fig.subplots_adjust(0.056, 0.10, 0.99, 0.95)
     grid = GridSpec(2, 4, wspace=0.33, hspace=0.08)
+elif mode == 'presentation':
+    fig = plt.figure(figsize=mm(170, 110), dpi=200)
+    fig.subplots_adjust(0.056, 0.07, 0.99, 0.95)
+    grid = GridSpec(3, 4, wspace=0.33, hspace=0.08)
 else:
     raise NotImplementedError
 
@@ -314,28 +320,14 @@ for row, method in enumerate(methods):
 
 
 # Add colour bar
-if mode == 'all':
-    axbar = plt.axes([0.16, 0.97, 0.73, 0.02])
-    axbar.text(
-        -0.01, 0.5, 'High RMSE',
-        transform=axbar.transAxes,
-        horizontalalignment='right', verticalalignment='center')
-    axbar.text(
-        1.01, 0.5, 'Low RMSE', transform=axbar.transAxes,
-        horizontalalignment='left', verticalalignment='center')
-
-elif mode == 'partial':
-    axbar = plt.axes([0.16, 0.97, 0.73, 0.02])
-    axbar.text(
-        -0.01, 0.5, 'High RMSE',
-        transform=axbar.transAxes,
-        horizontalalignment='right', verticalalignment='center')
-    axbar.text(
-        1.01, 0.5, 'Low RMSE', transform=axbar.transAxes,
-        horizontalalignment='left', verticalalignment='center')
-
-else:
-    raise NotImplementedError
+axbar = plt.axes([0.16, 0.97, 0.73, 0.02])
+axbar.text(
+    -0.01, 0.5, 'High RMSE',
+    transform=axbar.transAxes,
+    horizontalalignment='right', verticalalignment='center')
+axbar.text(
+    1.01, 0.5, 'Low RMSE', transform=axbar.transAxes,
+    horizontalalignment='left', verticalalignment='center')
 axbar.set_xticks([])
 axbar.set_yticks([])
 for sp in axbar.spines:
