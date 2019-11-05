@@ -120,7 +120,7 @@ def fit(cell, method, search_transformation='a', sample_transformation='a',
         if repeats < 1:
             raise ValueError('Number of repeats must be at least 1.')
         if debug:
-            repeats = 3
+            repeats = min(3, repeats)
 
     # Check cap on total number of runs
     if start_from_m1:
