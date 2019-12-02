@@ -43,12 +43,14 @@ def current(ax, cell):
     t = log['time']
     c = log['current']
 
+    c /= np.max(c)
+
     # Fold steps
     split = sumstat.split_points(3, False)
     for i, bounds in enumerate(split):
         if i == 5:
             lo, hi = bounds
-            ax.plot(t[lo:hi] - t[lo], c[lo:hi], color='#003388', lw=1, alpha=0.75)
+            ax.plot(t[lo:hi] - t[lo], c[lo:hi], color='#003388', lw=1, alpha=0.5)
 
 
 def voltage(ax, cell):
@@ -89,12 +91,21 @@ voltage(ax00, 1)
 # Plot steady state of activation
 ax10 = fig.add_subplot(grid[1, 0])
 ax10.set_xlabel('Time (ms)')
-ax10.set_ylabel('I (pA)')
+ax10.set_ylabel('Normalised I (pA)')
 #ax10.set_ylim(-0.1, 1.1)
+
+# Zoom
+x = [5550, 7200]
+ax00.fill_between(x, [-150, -150], [60, 60], color='k', alpha=0.1)
+ax00.set_ylim(-140, 50)
+ax10.set_xlim(*x)
+ax10.set_ylim(-3.1, 1.05)
+
 
 for cell in cell_list:
 
     # Show activation diagram
     current(ax10, cell)
+
 
 plt.savefig(base + '.png')
