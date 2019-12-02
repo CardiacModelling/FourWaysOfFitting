@@ -147,13 +147,13 @@ def voltage(
         norm = matplotlib.colors.Normalize(0, (len(split) - 1) * cmap_fix)
         for i, bounds in enumerate(split):
             lo, hi = bounds
-            ax.plot(t[lo:hi] - t[lo], v[lo:hi], color=cmap(norm(i)), lw=lw)
+            ax.plot(t[lo:hi] - t[lo], v[lo:hi], color='k', lw=lw)
     else:
         # Normal plot
         if technicolor:
             _technicolor_dreamline(ax, t, v)
         else:
-            ax.plot(t, v, color='tab:green')
+            ax.plot(t, v, color='k')
 
 
 def _technicolor_dreamline(ax, x, y, z=None, lw=1):
