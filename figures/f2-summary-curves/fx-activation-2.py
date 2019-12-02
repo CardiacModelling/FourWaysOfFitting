@@ -33,39 +33,6 @@ if len(args) != 0:
 cell_list = range(1, 10)
 
 
-def current(ax, cell):
-    """
-    Creates a (possibly folded) plot on axes ``ax`` of the currents measured in
-    the given ``cell`` during the given ``protocol``.
-    """
-    # Load signal
-    log = data.load(cell, 3)
-    t = log['time']
-    c = log['current']
-
-    # Fold steps
-    split = sumstat.split_points(3, False)
-    for i, bounds in enumerate(split):
-        if i == 5:
-            lo, hi = bounds
-            ax.plot(t[lo:hi] - t[lo], c[lo:hi], color='#003388', lw=1, alpha=0.75)
-
-
-def voltage(ax, cell):
-    """
-    Creates a (possibly folded) plot on axes ``ax`` of the voltage for a given
-    ``protocol``.
-    """
-    # Load voltage signal
-    t, v = data.load_protocol_values(3)
-
-    # Plot
-    split = sumstat.split_points(3)
-    for i, bounds in enumerate(split):
-        if i == 5:
-            lo, hi = bounds
-            ax.plot(t[lo:hi] - t[lo], v[lo:hi], color='k', lw=1)
-
 # Set font
 font = {'family': 'arial', 'size': 10}
 matplotlib.rc('font', **font)
@@ -84,17 +51,19 @@ ax00 = fig.add_subplot(grid[0, 0])
 ax00.set_xlabel('Time (ms)')
 ax00.set_ylabel('V (mV)')
 
-voltage(ax00, 1)
+plots.voltage(ax00, 1, 3)
 
 # Plot steady state of activation
 ax10 = fig.add_subplot(grid[1, 0])
-ax10.set_xlabel('Time (ms)')
-ax10.set_ylabel('I (pA)')
-#ax10.set_ylim(-0.1, 1.1)
+ax10.set_xlabel('V (mV)')
+ax10.set_ylabel('Steady state activation')
+ax10.set_ylim(-0.1, 1.1)
 
 for cell in cell_list:
 
     # Show activation diagram
-    current(ax10, cell)
+    ai = sumstat.steady_state_activation(cell)
+    ax10.plot(ai[0], ai[1], '-', color='#003388', alpha=0.75)
+
 
 plt.savefig(base + '.png')
