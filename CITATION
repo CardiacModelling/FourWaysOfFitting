@@ -1,0 +1,19 @@
+To cite this work, please use:
+
+Clerx, M., Beattie K., Gavaghan, D. J., & Mirams, G. R. (2019).
+Four ways to fit an ion channel model
+Biophysical journal, 117, 2420-2437.
+
+https://doi.org/10.1016/j.bpj.2019.08.001
+
+A BibTeX entry for LaTeX users is
+
+@article{Clerx2019FourWays,
+  title={Four Ways to Fit an Ion Channel Model},
+  author={Clerx, Michael and Beattie, Kylie A and Gavaghan, David J and Mirams, Gary R},
+  journal={Biophyical Journal},
+  year={2019},
+  volume={117},
+  pages={2420--2437},
+  doi={10.1016/j.bpj.2019.08.001}
+}
