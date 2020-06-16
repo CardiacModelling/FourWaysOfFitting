@@ -162,6 +162,7 @@ class Boundaries(pints.Boundaries):
                 r = a * np.exp(b * v)
                 if r >= self.rmin and r <= self.rmax:
                     return a, b
+            raise ValueError('Too many iterations')
         elif self._sample_transformation_code in ['f', 'k']:
             for i in range(100):
                 a = np.exp(np.random.uniform(
