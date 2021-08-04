@@ -19,8 +19,10 @@ This repository contains all data, code, figures, and animations for the paper "
 
 The code requires Python (either 2.7 or 3.3+) and two dependencies: PINTS and Myokit.
 Myokit can be installed using `pip install myokit` (or `pip3 install myokit` for some python 3 environments), or following the instructions on http://myokit.org.
-PINTS can be installed using the instructions on https://github.com/pints-team/pints.
+PINTS can be installed using `pip install pints`.
 [Matplotlib](https://pypi.org/project/matplotlib/) is required to regenerate the figures, and one of the supplementary figures also requires [Seaborn](https://pypi.org/project/seaborn/).
+
+To get everything in one go, use `pip install -r requirements.txt`.
 
 Organisation:
 
