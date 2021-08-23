@@ -1,6 +1,6 @@
 # Four ways to fit an ion current model
 
-This repository contains all data, code, figures, and animations for the paper "Four ways to fit an ion current model", by Clerx, Beattie, Gavaghan, and Mirams.
+This repository contains all data, code, figures, and animations for the paper "[Four ways to fit an ion current model](https://doi.org/10.1016/j.bpj.2019.08.001)", by Clerx, Beattie, Gavaghan, and Mirams.
 
 ## Supporting materials
 
