@@ -91,6 +91,7 @@ def current(
     # Load signal
     if log is None:
         log = data.load(cell, protocol)
+    log = log.npview()
     t = log['time']
     c = log['current']
 

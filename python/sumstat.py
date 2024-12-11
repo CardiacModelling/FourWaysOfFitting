@@ -486,7 +486,12 @@ def time_constants_pr5(cell, pr5_log=None):
             pass
 
         # Double exponential
-        popt, pcov = curve_fit(f, t, c, [a1, b1, c1, b2, c2])
+        try:
+            popt, pcov = curve_fit(f, t, c, [a1, b1, c1, b2, c2])
+            print(popt)
+        except RuntimeError:
+            popt, pcov = curve_fit(f, t, c, [a1, -1, 10, 0.5, c2])
+
         tau_rec.append(popt[2])
         tau_act.append(popt[4])
         if debug:
